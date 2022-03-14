@@ -72,7 +72,7 @@ export default function TemporaryDrawer({ state, setState, isAdmin }) {
                     </ListItem>
                     <Divider/>
                     {settings.map((text, index) => (
-                        <ListItem button key={text} component={Link} onClick={()=>text == "Add Product"?navigate('/product/add'):navigate('/product/del')}>
+                        <ListItem button key={text} component={Link} onClick={()=>text === "Add Product"?navigate('/product/add'):navigate('/product/del')}>
                             <ListItemText sx={{ pl: 7 }} primary={text} />
                         </ListItem>
                     ))}

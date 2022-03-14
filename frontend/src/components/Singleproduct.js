@@ -39,33 +39,13 @@ const handleClose = (event, reason) => {
     const [count, setcount] = useState(1)
     const [minusdisable, setminusdisable] = useState(true)
     const [plusdisable, setplusdisable] = useState(false)
-    // const [singleproduct, setsingleproduct] = useState([...new Set(Object.values(product))])
     const [singleproduct, setsingleproduct] = useState(product[id])
     let [cart,setcart]=useState([]);
-    console.log(singleproduct);
-    const AddToCart = (stockval) => (event) => {
-        // setsingleproduct((prevdata) => {
-        //     prevdata.stock -= stockval
-        //     return ([...new Set(Object.values(prevdata))])
-
-        // })
+    const AddToCart = () => () => {
         setCarts(
             prev_carts => {
-                const userid = currentUser == null ? "unknown":currentUser.id;
-                console.log(prev_carts[userid]);
+                const userid = currentUser === null ? "unknown":currentUser.id;
                 prev_carts[userid].product_ids[id] = singleproduct;
-                // {
-                //     id:id,
-                //     name:singleproduct["name"],
-                //     url:singleproduct["url"],
-                //     price:singleproduct["price"],
-                //     stock:singleproduct["stock"],
-                //     category:singleproduct["category"],
-                //     fabric:singleproduct["fabric"],
-                //     color:singleproduct["color"],
-                //     date:singleproduct["date"],
-                //     description:singleproduct["description"]
-                // }
                 prev_carts[userid].product_ids[id]["quantity"] = count;
                 let total = 0; let totItem = 0;
                 if(Object.values(prev_carts[userid].product_ids).length > 0)

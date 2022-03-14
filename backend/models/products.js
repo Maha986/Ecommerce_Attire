@@ -7,12 +7,10 @@ const ProductSchema = new Schema({
         required: true
     },
     url:{
-        type: String,
-        required: true
+        type: String
     },
     fabric:{
-        type: String,
-        required: true
+        type: String
     },
     price:{
         type: Number,

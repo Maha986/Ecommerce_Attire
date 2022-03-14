@@ -44,7 +44,7 @@ export default function ProductCard({item}) {
       <Fade in={open} >
         <Box sx={style} >
           <img 
-          src={process.env.PUBLIC_URL +`/clothes/${item.url}`}
+          src={`http://localhost:5000/files/${item.url}`}
           // src = {require('../images/1.png')}
           style={{height:"99%",width:"100%"}} alt="..." />
         </Box>
@@ -56,13 +56,13 @@ export default function ProductCard({item}) {
         <CardMedia onClick={handleOpen}
           component="img"
           height="260"
-          image={process.env.PUBLIC_URL +`/clothes/${item.url}`}
+          image={`http://localhost:5000/files/${item.url}`}
           // image={require('../images/1.png')}
-          alt={item.name}
+          alt={item.product_name}
         />
-        <CardContent onClick={()=>navigate(`/product/${item.id}`)}>
+        <CardContent onClick={()=>navigate(`/product/${item._id}`)}>
           <Typography gutterBottom variant="h6" component="div">
-            {item.name}
+            {item.product_name}
           </Typography>
           <Typography variant="body2" color="secondary" sx={{fontWeight:"bold", fontSize:16}}>
             Price: Rs. {item.price}

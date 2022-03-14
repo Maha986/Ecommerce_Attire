@@ -16,29 +16,52 @@ import Select from '@mui/material/Select';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import ProductCard from './ProductCard';
 import CloseIcon from '@mui/icons-material/Close';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { useParams } from 'react-router-dom';
+import { useContext } from 'react';
+import productContext from '../contexts/productContext/productContext';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
 
-function CategoricalProducts(props) {
-    console.log(props.data)
-    const { window } = props;
+function AllProducts(props) {
+    const context = useContext(productContext);
+    const {pro,setproducts,getProducts} = context;
+    const navigate = useNavigate();
+    
+    useEffect(async ()=>{
+        if(pro===null)
+        {
+            console.log("called");
+            await getProducts();
+            console.log("finished");
+        }
+    },[])
+    // if(pro==null)
+    // {
+    //     navigate('/products');
+    // }
+    // else
+    // {
+    //     setpage_product
+    // }
+     
+    const { windows } = props;
+    
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
-    const params = useParams()
-    const [products, setproducts] = useState(Object.values(props.data).filter((product) => product.category === params.category));
-    
     const [page, setPage] = React.useState(1);
 
-    const [page_product, setpage_product] = useState([...products.filter(
+    console.log(pro);
+    const [page_product, setpage_product] = useState((pro!==null && pro!==false) ? [...pro.filter(
         (prod, ind) => (ind >= ((page - 1) * 12) && ind < page * 12)
-    )])
-    const count = Math.ceil(products.length / 12);
+    )]:[]);
+
+    
+    
+    const count=(pro!==null && pro!==false) ? Math.ceil(pro.length / 12) : 0;
+
+    
 
 
     const handleChange = (event, value) => {
@@ -46,10 +69,10 @@ function CategoricalProducts(props) {
     };
 
     useEffect(() => {
-        setpage_product([...products.filter(
+        (pro!==null && pro!==false) && setpage_product([...pro.filter(
             (prod, ind) => (ind >= ((page - 1) * 12) && ind < page * 12)
         )])
-    }, [page, products])
+    }, [page, pro])
 
     const [fabricvalue, setfabricValue] = useState('')
     const fabrichandleChange = (event) => {
@@ -73,7 +96,6 @@ function CategoricalProducts(props) {
         setSort(event.target.value);
     };
     function sortProducts(unsorted, key, reverse) {
-        console.log(key, reverse);
         let temp_prod = {};
         unsorted.map(
             (item) => {
@@ -81,7 +103,6 @@ function CategoricalProducts(props) {
                     temp_prod[item[key]] = [];
                 temp_prod[item[key]].push(item);
             })
-        console.log(temp_prod);
         let sorted = [];
         Object.values(Object.fromEntries(Object.entries(temp_prod).sort())).forEach(
             (items_arr) => sorted.push(...items_arr)
@@ -94,54 +115,50 @@ function CategoricalProducts(props) {
             )])
     }
     useEffect(() => {
-        if (sort !== '') sortProducts(products, sortNames[sort], sort % 2 === 0);
+        if (sort !== '' && pro!==null && pro!==false ) sortProducts(pro, sortNames[sort], sort % 2 === 0);
 
-    }, [sort, params])
-    useEffect(()=>{
-        setproducts(Object.values(props.data).filter((product) => product.category === params.category));
-    },[params])
+    }, [sort])
     useEffect(() => {
         let temp_prod = [];
-        // setproducts(Object.values(props.data).filter((product) => product.category === params.category));
         if (fabricvalue  !== '' && colorvalue  !== '') {
 
-            temp_prod = Object.values(props.data).filter(
-                (item) => ((item.fabric === fabricvalue && item.category === params.category && item.color === colorvalue) && item.price <= price[1] && item.price >= price[0]))
-            console.log(temp_prod);
+            temp_prod = Object.values(pro).filter(
+                (item) => ((item.fabric === fabricvalue && item.color === colorvalue) && item.price <= price[1] && item.price >= price[0]))
+           
             setproducts(temp_prod);
             if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
         else if (fabricvalue  !== '' && colorvalue === '') {
 
-            temp_prod = Object.values(props.data).filter(
-                (item) => ((item.fabric === fabricvalue) && item.category === params.category&& item.price <= price[1] && item.price >= price[0]))
-            console.log(temp_prod);
+            temp_prod = (pro!==null && pro!==false) && Object.values(pro).filter(
+                (item) => ((item.fabric === fabricvalue) && item.price <= price[1] && item.price >= price[0]))
+            
             setproducts(temp_prod);
             if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
         else if (fabricvalue === '' && colorvalue  !== '') {
 
-            temp_prod = Object.values(props.data).filter(
-                (item) => ((item.color === colorvalue) && item.category === params.category&& item.price <= price[1] && item.price >= price[0]))
-            console.log(temp_prod);
+            temp_prod = (pro!==null && pro!==false) &&  Object.values(pro).filter(
+                (item) => ((item.color === colorvalue) && item.price <= price[1] && item.price >= price[0]))
+  
             setproducts(temp_prod);
             if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
         else {
-            temp_prod = Object.values(props.data).filter(
-                (item) => (item.price <= price[1] && item.category === params.category&& item.price >= price[0]))
-            console.log(temp_prod);
+            temp_prod = (pro!==null && pro!==false) &&  Object.values(pro).filter(
+                (item) => (item.price <= price[1] && item.price >= price[0]))
+            
             setproducts(temp_prod);
             if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
 
-    }, [fabricvalue, colorvalue, price, params])
+    }, [fabricvalue, colorvalue, price])
 
-    const container = window !== undefined ? () => window().document.body : undefined;
+    const container = windows !== undefined ? () => windows().document.body : undefined;
 
     const drawer = (
         <div>
@@ -159,28 +176,24 @@ function CategoricalProducts(props) {
             </Typography>
             <Divider />
             <div style={{ marginLeft: "7px" }}>
-                <Button variant="outlined" color="secondary" onClick={() => { setPrice([0, 10000]); setcolorValue(''); setfabricValue(''); setproducts(products); if (sort !== '') sortProducts(products, sortNames[sort], sort % 2 === 0); setPage(1); }} sx={{ margin: "9px 0px", display: "block" }}>Clear All</Button>
+                <Button variant="outlined" color="secondary" onClick={() => { setPrice([0, 10000]); setcolorValue(''); setfabricValue('');  (pro!==null && pro!==false) && setproducts(Object.values(pro)); if (sort !== '' && pro!==null  && pro!==false ) sortProducts(Object.values(pro), sortNames[sort], sort % 2 === 0); setPage(1); }} sx={{ margin: "9px 0px", display: "block" }}>Clear All</Button>
 
                 {fabricvalue  !== '' ? <Typography color="error" size="small"><IconButton onClick={() => setfabricValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{fabricvalue}</Typography> : false}
                 {colorvalue  !== '' ? <Typography color="error"><IconButton onClick={() => setcolorValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{colorvalue}</Typography> : false}
                 <Divider />
                 <br />
-                {
-                // [... new Set(products.map(item => item.fabric))].filter((item)=>item !== undefined).length > 0 
-                // &&
-                // <Typography sx={{ marginTop: "12px" }}>Fabric</Typography>
-                // }
-                // <RadioGroup row
-                //     aria-label="fabric"
-                //     name="controlled-radio-buttons-group"
-                //     value={fabricvalue}
-                //     onChange={fabrichandleChange}
-                // >
-                //     {[... new Set(products.map(item => item.fabric))].filter((item)=>item !== undefined).map((elem) => {
-                //         return <FormControlLabel key={elem} value={elem} sx={{ color: "#9a78b3" }} control={<Radio size="small" color="secondary" />} label={elem} />
-                //     })}
+                {/* <Typography sx={{ marginTop: "12px" }}>Fabric</Typography>
+                <RadioGroup row
+                    aria-label="fabric"
+                    name="controlled-radio-buttons-group"
+                    value={fabricvalue}
+                    onChange={fabrichandleChange}
+                >
+                    {[... new Set(Object.values(props.data).map(item => item.fabric))].filter((item)=>item !== undefined).map((elem) => {
+                        return <FormControlLabel key={elem} value={elem} sx={{ color: "#9a78b3" }} control={<Radio size="small" color="secondary" />} label={elem} />
+                    })}
 
-                // </RadioGroup>
+                </RadioGroup> */}
                 <FormControl fullWidth color="secondary">
                         <InputLabel id="demo-simple-select">Filter By Fabric</InputLabel>
                         <Select
@@ -190,15 +203,14 @@ function CategoricalProducts(props) {
                             label="Filter By Fabric"
                             onChange={fabrichandleChange}
                         >
-                            {[... new Set(products.map(item => item.fabric))].filter((item)=>item !== undefined).map((elem) => 
+                            { (pro!==null && pro!==false) && [... new Set(Object.values(pro).map(item => item.fabric))].filter((item)=>item !== undefined).map((elem) => 
                                 <MenuItem value={elem}>{elem}</MenuItem>
                             )}
                         </Select>
                     </FormControl>
-                }
-                <br /><br />
+                    <br /><br />
                 <Divider />
-
+                
                 <Typography sx={{ marginTop: "12px" }}>Price-range</Typography>
 
 
@@ -239,7 +251,7 @@ function CategoricalProducts(props) {
                     value={colorvalue}
                     onChange={colorhandleChange}
                 >
-                    {[... new Set(products.map(item => item.color))].map((elem) => {
+                    {[... new Set(Object.values(props.data).map(item => item.color))].map((elem) => {
                         return <FormControlLabel key={elem} value={elem} sx={{ color: "#9a78b3" }} control={<Radio size="small" color="secondary" />} label={elem} />
                     })}
 
@@ -253,7 +265,7 @@ function CategoricalProducts(props) {
                             label="Filter By Color"
                             onChange={colorhandleChange}
                         >
-                            {[... new Set(products.map(item => item.color))].map((elem) => 
+                            { (pro!==null && pro!==false) && [... new Set(Object.values(pro).map(item => item.color))].map((elem) => 
                                 <MenuItem value={elem}>{elem}</MenuItem>
                             )}
                         </Select>
@@ -300,20 +312,10 @@ function CategoricalProducts(props) {
                 component="main"
                 sx={{ flexGrow: 1, marginLeft: "9px", clear: "both", width: { sm: `calc(100% - ${drawerWidth}px)` } }}
             >
-                <Box >
-                    <Typography variant="h5" sx={{ display: "flex", alignItems: "center", justifyContent: "start",ml:4, mt: 4 }}>
-                        {params.category}
-                    </Typography>
-                    
-                </Box>
-                
                 <div style={{ display:"flex", justifyContent:"center"}}>
                     <Pagination count={count} page={page} color="secondary" onChange={handleChange} sx={{ my:4 }} />
-
                 </div>
-                {/* <div style={{ width: "190px", margin: "40px auto 20px auto" }}>
-                    <Pagination count={count} page={page} color="secondary" onChange={handleChange} sx={{ float: "right", marginBottom: "4px" }} />
-                </div> */}
+
                 {/* <Toolbar /> */}
                 <IconButton
 
@@ -346,9 +348,6 @@ function CategoricalProducts(props) {
                     </FormControl>
                 </div>
 
-
-
-
                 <Box
                     sx={{
                         display: 'flex',
@@ -357,8 +356,8 @@ function CategoricalProducts(props) {
                         justifyContent: 'space-evenly'
                     }}
                 >
-                    {page_product.map((item) => {
-                        return <ProductCard key={item.id} item={item} />
+                    {(pro!==null && pro!==false) && page_product.map((item) => {
+                        return <ProductCard key={item._id} item={item} />
                     })}
                     {
                         page_product.length ==0 && 
@@ -370,7 +369,6 @@ function CategoricalProducts(props) {
                 </Box>
                 <div style={{ display:"flex", justifyContent:"center"}}>
                     <Pagination count={count} page={page} color="secondary" onChange={handleChange} sx={{ my:4 }} />
-
                 </div>
 
             </Box>
@@ -378,8 +376,8 @@ function CategoricalProducts(props) {
     );
 }
 
-CategoricalProducts.propTypes = {
-    window: PropTypes.func,
+AllProducts.propTypes = {
+    windows: PropTypes.func,
 };
 
-export default CategoricalProducts;
+export default AllProducts;

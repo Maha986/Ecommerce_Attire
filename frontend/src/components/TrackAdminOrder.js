@@ -8,12 +8,12 @@ import Box from '@mui/material/Box';
 // import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 // import FactCheckIcon from '@mui/icons-material/FactCheck';
-import Typography from '@mui/material/Typography'
+import Typography from '@mui/material/Typography';
 
-function TrackAdminOrder({ currentUser, order, setOrders }) {
-    const user = currentUser.status;
+function TrackAdminOrder({ order, setOrders }) {
+    const userAuthres = JSON.parse(localStorage.getItem('userAuthres'));
     const [adminorder, setadminorder] = useState([...new Set(Object.values(order))])
-    const [userorder, setuserorder] = useState(Object.values(order).filter((item) => item.userid == currentUser.id))
+    const [userorder, setuserorder] = useState(Object.values(order).filter((item) => item.userid === userAuthres._id))
     const updateorderstatus = (statusvalue, orderid) => {
         setOrders((prevorders) => {
             prevorders[orderid].status = statusvalue;
@@ -29,20 +29,20 @@ function TrackAdminOrder({ currentUser, order, setOrders }) {
                     <Grid container spacing={2} lg={12} style={{ width: "auto" }}>
                         <Grid item xs={12} style={{ width: "auto" }}>
                             {
-                                adminorder.length == 0 &&
+                                adminorder.length === 0 &&
                                 <Typography variant="subtitle3" color="text.secondary" component="div"
                                     sx={{ textAlign: "center", mt: 2, }} >
                                     No Orders To Show
                                 </Typography>
                             }
                             {
-                                user == "admin" && adminorder.length > 0 && adminorder.map((item) => {
+                                userAuthres.status === "admin" && adminorder.length > 0 && adminorder.map((item) => {
                                     return (<AdminAccordian key={item.id} item={item} updatestatus={updateorderstatus}></AdminAccordian>)
                                 })
                             }
                             {
                                 userorder.map((item) => {
-                                    if (item.userid == currentUser.id) {
+                                    if (item.userid === userAuthres._id) {
                                         console.log(item, "itemm")
                                         return (<Accordian key={item.id} item={item}></Accordian>)
                                     }

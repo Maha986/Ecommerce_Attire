@@ -103,7 +103,7 @@ export default function TemporaryDrawer({ state, setState, carts, setCarts, prod
                             </Typography>
                     }
                     {
-                        currentUser == null && Object.keys(carts[cartUserID].product_ids).length > 0 &&
+                        currentUser === null && Object.keys(carts[cartUserID].product_ids).length > 0 &&
                         <Typography variant="subtitle3" color="text.secondary" component="div"
                                 sx={{ textAlign: "center", mt: 2, }} >
                                 Please Login To Checkout
@@ -117,7 +117,7 @@ export default function TemporaryDrawer({ state, setState, carts, setCarts, prod
                     <ListItem
                         button
                         onClick={()=>{navigate("/checkout");setState(false);}}
-                        disabled={currentUser != null ? (Object.keys(carts[cartUserID].product_ids).length > 0 ? false : true) : true}
+                        disabled={currentUser  !== null ? (Object.keys(carts[cartUserID].product_ids).length > 0 ? false : true) : true}
                         aria-label="close"
                         sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "end", color: "white" }}
                     >

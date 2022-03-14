@@ -94,7 +94,9 @@ const StyledInputBase = styled(InputBase, { shouldForwardProp: (prop) => prop !=
 const NavBar = ({ carts, setCarts, products, currentUser, setCurrentUser, users, setUsers }) => {
     const loggedIn_user=localStorage.getItem('authToken');
     const context = useContext(userContext);
-    const {signup, userAuthres} = context;
+    const {signup} = context;
+    const userAuthres = JSON.parse(localStorage.getItem('userAuthres'));
+    // console.log(JSON.parse(userAuthres))
     const [openSuccess, setOpenSuccess] = React.useState(false);
 
     const navigate = useNavigate();
@@ -204,12 +206,14 @@ const NavBar = ({ carts, setCarts, products, currentUser, setCurrentUser, users,
     };
     const isSmallScreen = useMediaQuery('(max-width:600px)');
     function handleClicks(option) {
-        if (option == 'Login') { login_clicked(); handleCloseUserMenu(); }
-        else if (option == 'Signup') { user_signup_clicked();; handleCloseUserMenu(); }
-        else if (option == 'Account') { navigate('/settings');; handleCloseUserMenu(); }
-        else if (option == 'Orders' && currentUser.status == "admin") { navigate('/admin/orders'); handleCloseUserMenu(); }
-        else if (option == 'Orders' && currentUser.status == "user") { navigate('/user/orders'); handleCloseUserMenu(); }
-        else if (option == 'Logout') { localStorage.removeItem('authToken');setCurrentUser(null); navigate('/'); handleCloseUserMenu(); };
+        if (option === 'Login') { login_clicked(); handleCloseUserMenu(); }
+        else if (option === 'Signup') { user_signup_clicked();; handleCloseUserMenu(); }
+        else if (option === 'Account') { navigate('/settings');; handleCloseUserMenu(); }
+        else if (option === 'Orders' && userAuthres.status === "admin") { navigate('/admin/orders'); handleCloseUserMenu(); }
+        else if (option === 'Orders' && userAuthres.status === "user") { navigate('/user/orders'); handleCloseUserMenu(); }
+        else if (option === 'Logout') { localStorage.removeItem('authToken');
+        localStorage.removeItem('userAuthres');
+        setCurrentUser(null); navigate('/'); handleCloseUserMenu(); };
     }
 
     const handleCloseSuccess = (event, reason) => {
@@ -331,7 +335,7 @@ const NavBar = ({ carts, setCarts, products, currentUser, setCurrentUser, users,
                         />
                     </Search>
                 }
-                {OpenOptionsSideBar && <OptionsSideBar state={OptionsSideBar} setState={setOpenOptionsSideBar} isAdmin={currentUser !== null && currentUser.status == "admin" ? true : false} />}
+                {OpenOptionsSideBar && <OptionsSideBar state={OptionsSideBar} setState={setOpenOptionsSideBar} isAdmin={loggedIn_user && userAuthres !== null && userAuthres.status === "admin" ? true : false} />}
                 {OpenCartSideBar && <CartSideBar state={CartSideBar} setState={setOpenCartSideBar} carts={carts} setCarts={setCarts} products={products} currentUser={currentUser} />}
             </AppBar>
             <Modal

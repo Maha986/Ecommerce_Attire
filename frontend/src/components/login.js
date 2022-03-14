@@ -85,6 +85,7 @@ export const Login = (props) => {
         if(response.type==="success")
         {
             localStorage.setItem("authToken",response.message);
+            localStorage.setItem("userAuthres",JSON.stringify(response.user));
             // console.log(userAuthres);
             props.close();
             props.opensuccess(true)

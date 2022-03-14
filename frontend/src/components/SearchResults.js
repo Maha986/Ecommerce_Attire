@@ -79,7 +79,7 @@ function SearchResults(props) {
         let temp_prod = {};
         unsorted.map(
             (item) => {
-                if (temp_prod[item[key]] == undefined)
+                if (temp_prod[item[key]] === undefined)
                     temp_prod[item[key]] = [];
                 temp_prod[item[key]].push(item);
             })
@@ -96,36 +96,36 @@ function SearchResults(props) {
             )])
     }
     useEffect(() => {
-        if (sort !== '') sortProducts(products, sortNames[sort], sort % 2 == 0);
+        if (sort !== '') sortProducts(products, sortNames[sort], sort % 2 === 0);
 
     }, [sort])
     useEffect(() => {
         let temp_prod = [];
-        if (fabricvalue != '' && colorvalue != '') {
+        if (fabricvalue  !==  '' && colorvalue !== '') {
 
             temp_prod = Object.values(props.data).filter(
-                (item) => ((item.fabric == fabricvalue && item.name.toLowerCase().includes(params.query) == params.category && item.color == colorvalue) && item.price <= price[1] && item.price >= price[0]))
+                (item) => ((item.fabric === fabricvalue && item.name.toLowerCase().includes(params.query) === params.category && item.color === colorvalue) && item.price <= price[1] && item.price >= price[0]))
             console.log(temp_prod);
             setproducts(temp_prod);
-            if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 == 0);
+            if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
-        else if (fabricvalue != '' && colorvalue == '') {
+        else if (fabricvalue !== '' && colorvalue === '') {
 
             temp_prod = Object.values(props.data).filter(
-                (item) => ((item.fabric == fabricvalue) && item.name.toLowerCase().includes(params.query) && item.price <= price[1] && item.price >= price[0]))
+                (item) => ((item.fabric === fabricvalue) && item.name.toLowerCase().includes(params.query) && item.price <= price[1] && item.price >= price[0]))
             console.log(temp_prod);
             setproducts(temp_prod);
-            if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 == 0);
+            if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
-        else if (fabricvalue == '' && colorvalue != '') {
+        else if (fabricvalue === '' && colorvalue != '') {
 
             temp_prod = Object.values(props.data).filter(
-                (item) => ((item.color == colorvalue) && item.name.toLowerCase().includes(params.query)&& item.price <= price[1] && item.price >= price[0]))
+                (item) => ((item.color === colorvalue) && item.name.toLowerCase().includes(params.query)&& item.price <= price[1] && item.price >= price[0]))
             console.log(temp_prod);
             setproducts(temp_prod);
-            if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 == 0);
+            if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
         else {
@@ -133,7 +133,7 @@ function SearchResults(props) {
                 (item) => (item.price <= price[1] && item.name.toLowerCase().includes(params.query)&& item.price >= price[0]))
             console.log(temp_prod);
             setproducts(temp_prod);
-            if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 == 0);
+            if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
 
@@ -157,10 +157,10 @@ function SearchResults(props) {
             </Typography>
             <Divider />
             <div style={{ marginLeft: "7px" }}>
-                <Button variant="outlined" color="secondary" onClick={() => { setPrice([0, 10000]); setcolorValue(''); setfabricValue(''); setproducts(products); if (sort !== '') sortProducts(products, sortNames[sort], sort % 2 == 0); setPage(1); }} sx={{ margin: "9px 0px", display: "block" }}>Clear All</Button>
+                <Button variant="outlined" color="secondary" onClick={() => { setPrice([0, 10000]); setcolorValue(''); setfabricValue(''); setproducts(products); if (sort !== '') sortProducts(products, sortNames[sort], sort % 2 === 0); setPage(1); }} sx={{ margin: "9px 0px", display: "block" }}>Clear All</Button>
 
-                {fabricvalue != '' ? <Typography color="error" size="small"><IconButton onClick={() => setfabricValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{fabricvalue}</Typography> : false}
-                {colorvalue != '' ? <Typography color="error"><IconButton onClick={() => setcolorValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{colorvalue}</Typography> : false}
+                {fabricvalue !== '' ? <Typography color="error" size="small"><IconButton onClick={() => setfabricValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{fabricvalue}</Typography> : false}
+                {colorvalue !== '' ? <Typography color="error"><IconButton onClick={() => setcolorValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{colorvalue}</Typography> : false}
                 <Divider />
                 <br />
                 {
