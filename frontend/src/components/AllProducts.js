@@ -16,58 +16,57 @@ import Select from '@mui/material/Select';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import ProductCard from './ProductCard';
 import CloseIcon from '@mui/icons-material/Close';
-import { useContext } from 'react';
+import { useContext,useRef } from 'react';
 import productContext from '../contexts/productContext/productContext';
-import Price from './Price';
 
 const drawerWidth = 240;
 
 function AllProducts(props) {
     const context = useContext(productContext);
-    const {pro,setproducts,getProducts,max_price} = context;
-    const [actual_product, setactual_product] = useState([]);
-    
-    
-    useEffect(async ()=>{
-        if(pro===null || pro===[])
-        {
+    const { pro, setproducts, getProducts, max_price } = context;
+    const [actual_product, setactual_product] = useState(pro);
+    const [value, setvalue] = useState(0);
+    const BoxStyle = useRef();
+
+
+    const [price, setPrice] = React.useState([0, 1]);
+
+    useEffect(async () => {
+        setvalue((val) => val + 1);
+        if (pro === null) {
             await getProducts();
         }
-    },[])
-     
+        if (value === 1) {
+            setactual_product(pro);
+        }
+    }, [pro])
+
     const { windows } = props;
-    
+
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
     const [page, setPage] = React.useState(1);
 
-    
-    const [page_product, setpage_product] = useState((pro!==null && pro!==false) ? [...pro.filter(
+    const [page_product, setpage_product] = useState((pro !== null && pro !== false) ? [...pro.filter(
         (prod, ind) => (ind >= ((page - 1) * 12) && ind < page * 12)
-    )]:[]);
+    )] : []);
 
-    
-    
-    const count=(pro!==null && pro!==false) ? Math.ceil(pro.length / 12) : 0;
 
-    const [price, setPrice] = React.useState( [0,1]);
 
-    // useEffect(()=>{
-    //     if(max_price!==0 && pro!==false && pro!==null)
-    //     {
-    //         console.log("Ere")
-    //         setPrice([0,max_price])
-    //     }
-    // },[max_price])
+    const count = (pro !== null && pro !== false) ? Math.ceil(pro.length / 12) : 0;
+
+    useEffect(() => {
+        setPrice([0, max_price]);
+    }, [max_price])
 
     const handleChange = (event, value) => {
         setPage(value);
     };
 
     useEffect(() => {
-        (pro!==null && pro!==false) && setpage_product([...pro.filter(
+        (pro !== null && pro !== false) && setpage_product([...pro.filter(
             (prod, ind) => (ind >= ((page - 1) * 12) && ind < page * 12)
         )])
     }, [page, pro])
@@ -76,10 +75,6 @@ function AllProducts(props) {
     const fabrichandleChange = (event) => {
         setfabricValue(event.target.value);
     };
-
-    
-   
-    
 
     const handlePriceChange = (event, newPriceValue) => {
         setPrice(newPriceValue);
@@ -116,44 +111,38 @@ function AllProducts(props) {
             )])
     }
     useEffect(() => {
-        if (sort !== '' && pro!==null && pro!==false ) sortProducts(pro, sortNames[sort], sort % 2 === 0);
+        if (sort !== '' && pro !== null && pro !== false) sortProducts(pro, sortNames[sort], sort % 2 === 0);
 
     }, [sort])
     useEffect(() => {
         let temp_prod = [];
-        if (fabricvalue  !== '' && colorvalue  !== '') {
-            setactual_product(pro);
-            temp_prod = Object.values(pro).filter(
+        if (fabricvalue !== '' && colorvalue !== '') {
+            temp_prod = (pro !== null && pro !== false) && Object.values(actual_product).filter(
                 (item) => ((item.fabric === fabricvalue && item.color === colorvalue) && item.price <= price[1] && item.price >= price[0]))
-           
+
             setproducts(temp_prod);
             if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
-        else if (fabricvalue  !== '' && colorvalue === '') {
-            setactual_product(pro);
-            temp_prod = (pro!==null && pro!==false) && Object.values(pro).filter(
+        else if (fabricvalue !== '' && colorvalue === '') {
+            temp_prod = (pro !== null && pro !== false) && Object.values(actual_product).filter(
                 (item) => ((item.fabric === fabricvalue) && item.price <= price[1] && item.price >= price[0]))
-            
+
             setproducts(temp_prod);
             if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
-        else if (fabricvalue === '' && colorvalue  !== '') {
-            setactual_product(pro);
-            temp_prod = (pro!==null && pro!==false) &&  Object.values(pro).filter(
+        else if (fabricvalue === '' && colorvalue !== '') {
+            temp_prod = (pro !== null && pro !== false) && Object.values(actual_product).filter(
                 (item) => ((item.color === colorvalue) && item.price <= price[1] && item.price >= price[0]))
-  
+
             setproducts(temp_prod);
             if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
-        else {
-            setactual_product(actual_product);
-            temp_prod = Object.values(actual_product).filter(
-                (item) => (item.price <= price[1] && item.price >= price[0]))
-            
-            setproducts(temp_prod);
+        else if (fabricvalue === '' && colorvalue === '' && price[1] > 1) {
+            temp_prod = (pro !== null && pro !== false && actual_product !== null && actual_product !== false) && Object.values(actual_product).filter((item) => (item.price <= price[1] && item.price >= price[0]));
+            (temp_prod !== []) && setproducts(temp_prod);
             if (sort !== '') sortProducts(temp_prod, sortNames[sort], sort % 2 === 0);
             setPage(1);
         }
@@ -178,37 +167,69 @@ function AllProducts(props) {
             </Typography>
             <Divider />
             <div style={{ marginLeft: "7px" }}>
-                <Button variant="outlined" color="secondary" onClick={() => { setPrice([0,10]); setcolorValue(''); setfabricValue('');  setproducts(Object.values(actual_product));  if (sort !== '' && actual_product!==[]) sortProducts(Object.values(actual_product), sortNames[sort], sort % 2 === 0); setPage(1); }} sx={{ margin: "9px 0px", display: "block" }}>Clear All</Button>
+                <Button variant="outlined" color="secondary" onClick={() => { setPrice([0, max_price]); setcolorValue(''); setfabricValue(''); setproducts(Object.values(actual_product)); if (sort !== '' && actual_product !== []) sortProducts(Object.values(actual_product), sortNames[sort], sort % 2 === 0); setPage(1); }} sx={{ margin: "9px 0px", display: "block" }}>Clear All</Button>
 
-                {fabricvalue  !== '' ? <Typography color="error" size="small"><IconButton onClick={() => setfabricValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{fabricvalue}</Typography> : false}
-                {colorvalue  !== '' ? <Typography color="error"><IconButton onClick={() => setcolorValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{colorvalue}</Typography> : false}
+                {fabricvalue !== '' ? <Typography color="error" size="small"><IconButton onClick={() => setfabricValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{fabricvalue}</Typography> : false}
+                {colorvalue !== '' ? <Typography color="error"><IconButton onClick={() => setcolorValue('')}><CloseIcon sx={{ color: "#9a78b3" }} /></IconButton>{colorvalue}</Typography> : false}
                 <Divider />
                 <br />
                 <FormControl fullWidth color="secondary">
-                        <InputLabel id="demo-simple-select">Filter By Fabric</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={fabricvalue}
-                            label="Filter By Fabric"
-                            onChange={fabrichandleChange}
-                        >
-                            { (pro!==null && pro!==false) && [... new Set(Object.values(pro).map(item => item.fabric))].filter((item)=>item !== undefined).map((elem) => 
-                                <MenuItem value={elem}>{elem}</MenuItem>
-                            )}
-                        </Select>
-                    </FormControl>
-                    <br /><br />
-                
-                
-                
+                    <InputLabel id="demo-simple-select">Filter By Fabric</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={fabricvalue}
+                        label="Filter By Fabric"
+                        onChange={fabrichandleChange}
+                    >
+                        {(actual_product !== null && actual_product !== undefined) && [... new Set(Object.values(actual_product).map(item => item.fabric))].filter((item) => item !== undefined).map((elem) =>
+                            <MenuItem value={elem}>{elem}</MenuItem>
+                        )}
+                    </Select>
+                </FormControl>
+                <br /><br />
+
+
+
 
 
                 {
-                    (pro!==null && pro!==false && max_price!==0) && <Price price={price} max_price={max_price} setPrice={setPrice}/>
-                    
-                    }
-                
+                    (actual_product !== null && actual_product !== false && max_price !== 0) &&
+                    <><Divider />
+                        <Typography sx={{ marginTop: "12px" }}>Price-range</Typography>
+
+                        <TextField
+                            color="secondary"
+                            label="Min. Price (Rs.)"
+                            type="number"
+                            variant="standard"
+                            value={price[0]}
+                            onChange={(e) => setPrice((prev) => [e.target.value, prev[1]])}
+                        /><br />
+                        <Slider
+                            getAriaLabel={() => 'Price Range'}
+                            value={price}
+                            min={0}
+                            step={1}
+                            max={max_price}
+                            onChange={handlePriceChange}
+                            valueLabelDisplay="auto"
+                            sx={{ width: "80%", ml: 2 }}
+                            color="secondary"
+                        /><br />
+                        <TextField
+                            color="secondary"
+                            label="Max. Price (Rs.)"
+                            type="number"
+                            variant="standard"
+                            value={price[1]}
+                            onChange={(e) => setPrice((prev) => [prev[0], e.target.value])}
+                        />
+                        <br /><br />
+                        <Divider />
+                    </>
+                }
+
                 <br />
                 {/* <Typography sx={{ marginTop: "12px" }}>Color</Typography>
                 <RadioGroup row
@@ -223,19 +244,19 @@ function AllProducts(props) {
 
                 </RadioGroup> */}
                 <FormControl fullWidth color="secondary">
-                        <InputLabel id="demo-simple-select">Filter By Color</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={colorvalue}
-                            label="Filter By Color"
-                            onChange={colorhandleChange}
-                        >
-                            { (pro!==null && pro!==false) && [... new Set(Object.values(pro).map(item => item.color))].map((elem) => 
-                                <MenuItem value={elem}>{elem}</MenuItem>
-                            )}
-                        </Select>
-                    </FormControl>
+                    <InputLabel id="demo-simple-select">Filter By Color</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={colorvalue}
+                        label="Filter By Color"
+                        onChange={colorhandleChange}
+                    >
+                        {(actual_product !== null && actual_product !== undefined) && [... new Set(Object.values(actual_product).map(item => item.color))].map((elem) =>
+                            <MenuItem value={elem}>{elem}</MenuItem>
+                        )}
+                    </Select>
+                </FormControl>
             </div>
 
         </div>
@@ -278,8 +299,8 @@ function AllProducts(props) {
                 component="main"
                 sx={{ flexGrow: 1, marginLeft: "9px", clear: "both", width: { sm: `calc(100% - ${drawerWidth}px)` } }}
             >
-                <div style={{ display:"flex", justifyContent:"center"}}>
-                    <Pagination count={count} page={page} color="secondary" onChange={handleChange} sx={{ my:4 }} />
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                   {(pro!==null && pro !==false && page_product.length !== 0) && <Pagination count={count} page={page} color="secondary" onChange={handleChange} sx={{ my: 4 }} />} 
                 </div>
 
                 {/* <Toolbar /> */}
@@ -314,28 +335,30 @@ function AllProducts(props) {
                     </FormControl>
                 </div>
 
-                <Box
+                <Box ref={BoxStyle}
                     sx={{
                         display: 'flex',
                         flexWrap: 'wrap',
                         clear: "both",
-                        justifyContent: 'space-evenly'
+                        justifyContent: 'space-evenly',
+                        alignItems: 'center'
                     }}
                 >
-                    {(pro!==null && pro!==false) && page_product.map((item) => {
+                    {(pro !== null && pro !== false) && page_product.map((item) => {
                         return <ProductCard key={item._id} item={item} />
                     })}
                     {
-                        (pro!==null && pro!==false && page_product.length ==0) && 
-                        // <Typography variant="subtitle3" color="secondary" component="div"
-                        //         sx={{ textAlign: "center", mt: 2, }} >
-                        //         No Products To Show
-                        //     </Typography>
-                        console.log(pro)
+                        (pro !== null && pro !== false && page_product.length === 0) &&
+                        <>
+                        <Typography variant="subtitle3" color="secondary" component="div"
+                            sx={{textAlign: "center", mt: 2, paddingTop:"20%", fontSize:"1.2rem"}} >
+                            No Products To Show
+                        </Typography>
+                        </>
                     }
                 </Box>
-                <div style={{ display:"flex", justifyContent:"center"}}>
-                    <Pagination count={count} page={page} color="secondary" onChange={handleChange} sx={{ my:4 }} />
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                {(pro!==null && pro !==false && page_product.length !== 0) &&<Pagination count={count} page={page} color="secondary" onChange={handleChange} sx={{ my: 4 }} />}
                 </div>
 
             </Box>

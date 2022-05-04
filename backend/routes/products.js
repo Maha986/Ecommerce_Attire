@@ -17,9 +17,6 @@ route.post('/addProduct',
                 return res.status(400).json({ type: "error", message: 'Product with this name already exists' });
             }
 
-            var renamed = true;
-
-
             product = await Product.create({
                 product_name: product_name,
                 fabric: fabric,

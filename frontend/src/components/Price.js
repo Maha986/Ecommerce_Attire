@@ -5,14 +5,32 @@ import TextField from '@mui/material/TextField';
 import Slider from '@mui/material/Slider';
 
 function Price(props) {
-  const {price,setPrice, max_price}=props;
+  const {max_price,onMount}=props;
+  const [price, setPrice] = React.useState([0, 1]);
+
   const handlePriceChange = (event, newPriceValue) => {
     setPrice(newPriceValue);
+    onMount([price, setPrice]);
 };
 
 useEffect(()=>{
-  setPrice([0,max_price]);
-},[])
+  
+  if(price[1]===max_price)
+  {
+    return false;
+  }
+    setPrice([0,max_price]);
+    return false;
+},[max_price])
+
+useEffect(() => {
+  if(price[1]===1)
+  {
+    return false;
+  }
+    onMount([price, setPrice]);
+    return true;
+}, [onMount, price]);
   return (
     <>
       <Divider />
@@ -51,4 +69,4 @@ useEffect(()=>{
   )
 }
 
-export default Price
+export default React.memo(Price)

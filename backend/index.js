@@ -15,7 +15,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname));
 app.use(express.static(__dirname+"\\files"));
-console.log(__dirname)
 
 //Available Routes
 app.use('/api/auth',require('./routes/user_auth'));
